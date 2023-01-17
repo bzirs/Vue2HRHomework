@@ -1,4 +1,5 @@
 import { userLogin } from '@/api/user'
+import { setToken } from '@/utils/auth'
 
 import { Message } from 'element-ui'
 
@@ -10,7 +11,10 @@ const getUserState = _ => ({
 const mutations = {
   // 更新token
   updateToken(state, payload) {
-    console.log(payload)
+    state.token = payload
+
+    // 持久化处理
+    setToken(payload)
   }
 }
 
