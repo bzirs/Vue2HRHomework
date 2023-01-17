@@ -1,3 +1,4 @@
+import store from '@/store'
 import axios from 'axios'
 // import { MessageBox, Message } from 'element-ui'
 import { Message } from 'element-ui'
@@ -83,13 +84,35 @@ const service = axios.create({
 //   }
 // )
 
+// 添加请求拦截器
+service.interceptors.request.use(
+  function(config) {
+    // 在发送请求之前做些什么
+
+    const token = store.getters.token
+
+    // 存在token则携带token请求
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+
+    return config
+  },
+  function(error) {
+    // 对请求错误做些什么
+    return Promise.reject(error)
+  }
+)
+
 // 添加响应拦截器
 service.interceptors.response.use(
   function(response) {
     // 对响应数据做点什么
 
     // console.log(response)
-    const { data: { success, message }} = response
+    const {
+      data: { success, message }
+    } = response
 
     Message({
       showClose: true,

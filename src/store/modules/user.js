@@ -1,10 +1,9 @@
 import { userLogin } from '@/api/user'
-import { setToken } from '@/utils/auth'
-
+import { getToken, setToken } from '@/utils/auth'
 
 const getUserState = _ => ({
   userInfo: {},
-  token: ''
+  token: getToken()
 })
 
 const mutations = {
@@ -21,7 +20,7 @@ const actions = {
 
   async toUserLogin({ commit }, payload) {
     // 用户登录
-    const { data, message } = await userLogin(payload)
+    const { data } = await userLogin(payload)
 
     commit('updateToken', data)
   }
