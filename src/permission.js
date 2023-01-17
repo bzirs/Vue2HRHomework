@@ -63,6 +63,8 @@ import store from './store'
 //   NProgress.done()
 // })
 
+const whiteList = ['/login', '/404']
+
 router.beforeEach(async(to, from, next) => {
   const token = store.getters.token
 
@@ -76,10 +78,10 @@ router.beforeEach(async(to, from, next) => {
       next()
     }
   } else {
-    if (to.path !== '/login') {
-      next('/login')
-    } else {
+    if (whiteList.includes(to.path)) {
       next()
+    } else {
+      next('/login')
     }
   }
 })
