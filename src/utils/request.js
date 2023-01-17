@@ -1,5 +1,6 @@
 import axios from 'axios'
 // import { MessageBox, Message } from 'element-ui'
+import { Message } from 'element-ui'
 // import store from '@/store'
 // import { getToken } from '@/utils/auth'
 
@@ -88,6 +89,16 @@ service.interceptors.response.use(
     // 对响应数据做点什么
 
     // console.log(response)
+    const { data: { success, message }} = response
+
+    Message({
+      showClose: true,
+      message,
+      type: success ? 'success' : 'error'
+    })
+
+    // 失败的情况
+    if (!success) return Promise.reject(new Error(message))
 
     return response.data
   },

@@ -1,7 +1,6 @@
 import { userLogin } from '@/api/user'
 import { setToken } from '@/utils/auth'
 
-import { Message } from 'element-ui'
 
 const getUserState = _ => ({
   userInfo: {},
@@ -25,12 +24,6 @@ const actions = {
     const { data, message } = await userLogin(payload)
 
     commit('updateToken', data)
-
-    Message({
-      showClose: true,
-      message,
-      type: 'success'
-    })
   }
 }
 
