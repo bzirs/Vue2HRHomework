@@ -1,5 +1,5 @@
-// import router from './router'
-// import store from './store'
+import router from './router'
+import store from './store'
 // import { Message } from 'element-ui'
 // import NProgress from 'nprogress' // progress bar
 // import 'nprogress/nprogress.css' // progress bar style
@@ -62,3 +62,24 @@
 //   // finish progress bar
 //   NProgress.done()
 // })
+
+router.beforeEach(async(to, from, next) => {
+  const token = store.getters.token
+
+  if (token) {
+    // 获取用户信息
+    await store.dispatch('user/getUserInfo')
+
+    if (to.path === '/login') {
+      next('/')
+    } else {
+      next()
+    }
+  } else {
+    if (to.path !== '/login') {
+      next('/login')
+    } else {
+      next()
+    }
+  }
+})
