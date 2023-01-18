@@ -11,19 +11,14 @@
             </el-row>
             <!-- 表格 -->
             <el-table :data="rows">
-              <el-table-column
-                label="序号"
-                width="120"
-                type="index"
-                :index="indexMethod"
-              />
+              <el-table-column label="序号" width="120" type="index" :index="indexMethod" />
               <el-table-column label="角色名称" prop="name" />
               <el-table-column label="描述" prop="description" />
               <el-table-column label="操作">
-                <template slot-scope="scope" width="200">
+                <template v-slot="{ row: { id } }" width="200">
                   <el-button size="small" type="success">分配权限</el-button>
                   <el-button size="small" type="primary">编辑</el-button>
-                  <el-button size="small" type="danger">删除</el-button>
+                  <el-button size="small" type="danger" @click="handleRemove(id)">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -32,7 +27,7 @@
               <!-- 分页组件 -->
               <el-pagination
                 :current-page="params.page"
-                :page-sizes="[2,5,10,20]"
+                :page-sizes="[2, 5, 10, 20]"
                 :page-size="params.pagesize"
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="total"
@@ -48,7 +43,7 @@
 </template>
 
 <script>
-import { getRoles } from '@/api/settings'
+import { getRoles, removeRole } from '@/api/settings'
 
 export default {
   name: 'SettingsPage',
@@ -75,6 +70,25 @@ export default {
   activated() {},
   updated() {},
   methods: {
+    // 删除角色
+    async handleRemove(id) {
+      try {
+        await this.$confirm('此操作将永久删除该角色, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+
+        try {
+          await removeRole(id)
+          // this.$message.success('删除角色成功')
+        } catch (error) {
+          console.log(error)
+        }
+      } catch (error) {
+        this.$message.info('取消操作')
+      }
+    },
     // 序号
     indexMethod(index) {
       return (this.params.page - 1) * this.params.pagesize + 1 + index
@@ -93,7 +107,9 @@ export default {
     // 获取角色列表
     async getRolesList() {
       this.rows = []
-      const { data: { total, rows }} = await getRoles(this.params)
+      const {
+        data: { total, rows }
+      } = await getRoles(this.params)
       this.total = total
       this.rows = rows
     }
