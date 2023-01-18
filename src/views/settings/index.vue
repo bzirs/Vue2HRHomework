@@ -17,7 +17,7 @@
               <el-table-column label="操作">
                 <template v-slot="{ row: { id } }" width="200">
                   <el-button size="small" type="success">分配权限</el-button>
-                  <el-button size="small" type="primary">编辑</el-button>
+                  <el-button size="small" type="primary" @click="handleEdit(id)">编辑</el-button>
                   <el-button size="small" type="danger" @click="handleRemove(id)">删除</el-button>
                 </template>
               </el-table-column>
@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import { addRole, getRoles, removeRole } from '@/api/settings'
+import { addRole, editRoleInfo, getRoleInfo, getRoles, removeRole } from '@/api/settings'
 
 export default {
   name: 'SettingsPage',
@@ -75,6 +75,8 @@ export default {
       rows: [],
 
       show: false,
+
+      isEdit: false,
 
       roleForm: {
         name: '',
@@ -94,6 +96,13 @@ export default {
   activated() {},
   updated() {},
   methods: {
+    // 编辑
+    async handleEdit(id) {
+      const { data } = await getRoleInfo(id)
+      this.roleForm = data
+      this.isEdit = true
+      this.show = true
+    },
     // 表单提交
     handleSubmit() {
       this.$refs.roleForm.validate(async valid => {
@@ -101,12 +110,14 @@ export default {
           // console.log(this.roleForm)
 
           try {
-            await addRole(this.roleForm)
+            await this.isEdit ? editRoleInfo(this.roleForm) : addRole(this.roleForm)
 
             // 刷新页面
             // console.log(this.total / this.params.pagesize)
-            this.total++
-            this.params.page = Math.ceil(this.total / this.params.pagesize)
+            if (!this.isEdit) {
+              this.total++
+              this.params.page = Math.ceil(this.total / this.params.pagesize)
+            }
             this.show = false
             this.roleForm = {}
             this.getRolesList()
@@ -118,6 +129,8 @@ export default {
     },
     // 新增角色
     handleAdd() {
+      this.isEdit = false
+      this.roleForm = {}
       this.show = true
     },
     // 删除角色
