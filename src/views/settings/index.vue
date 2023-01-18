@@ -41,7 +41,7 @@
     </div>
 
     <!-- 弹框 -->
-    <dialog-component :show-dialog.sync="show" title="新增角色" @handleSubmit="handleSubmit">
+    <dialog-component :show-dialog.sync="show" :title="title" @handleSubmit="handleSubmit">
       <template #form>
         <el-form ref="roleForm" :model="roleForm" :rules="rules" label-width="100px">
           <el-form-item label="角色名称" prop="name">
@@ -87,7 +87,11 @@ export default {
       }
     }
   },
-  computed: {},
+  computed: {
+    title() {
+      return this.isEdit ? '编辑角色' : '新增角色'
+    }
+  },
   watch: {},
   async created() {
     this.getRolesList()
