@@ -69,12 +69,12 @@ router.beforeEach(async(to, from, next) => {
   const token = store.getters.token
 
   if (token) {
-    // 获取用户信息
-    await store.dispatch('user/getUserInfo')
-
     if (to.path === '/login') {
       next('/')
     } else {
+      // 获取用户信息
+      store.getters.userId || await store.dispatch('user/getUserInfo')
+
       next()
     }
   } else {
