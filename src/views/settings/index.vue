@@ -7,7 +7,7 @@
           <el-tab-pane label="角色管理">
             <!-- 新增角色按钮 -->
             <el-row style="height: 60px">
-              <el-button icon="el-icon-plus" size="small" type="primary">新增角色</el-button>
+              <el-button icon="el-icon-plus" size="small" type="primary" @click="handleAdd">新增角色</el-button>
             </el-row>
             <!-- 表格 -->
             <el-table :data="rows">
@@ -41,11 +41,23 @@
     </div>
 
     <!-- 弹框 -->
+    <dialog-component :show-dialog.sync="show" title="新增角色" @handleSubmit="handleSubmit">
+      <template #form>
+        <el-form ref="roleForm" :model="roleForm" :rules="rules" label-width="100px">
+          <el-form-item label="角色名称" prop="name">
+            <el-input v-model="roleForm.name" />
+          </el-form-item>
+          <el-form-item label="角色描述">
+            <el-input v-model="roleForm.description" />
+          </el-form-item>
+        </el-form>
+      </template>
+    </dialog-component>
   </div>
 </template>
 
 <script>
-import { getRoles, removeRole } from '@/api/settings'
+import { addRole, getRoles, removeRole } from '@/api/settings'
 
 export default {
   name: 'SettingsPage',
@@ -60,7 +72,17 @@ export default {
       },
       total: 0,
 
-      rows: []
+      rows: [],
+
+      show: false,
+
+      roleForm: {
+        name: '',
+        description: ''
+      },
+      rules: {
+        name: [{ required: true, message: '角色名称不能为空', trigger: 'blur' }]
+      }
     }
   },
   computed: {},
@@ -72,6 +94,32 @@ export default {
   activated() {},
   updated() {},
   methods: {
+    // 表单提交
+    handleSubmit() {
+      this.$refs.roleForm.validate(async valid => {
+        if (valid) {
+          // console.log(this.roleForm)
+
+          try {
+            await addRole(this.roleForm)
+
+            // 刷新页面
+            // console.log(this.total / this.params.pagesize)
+            this.total++
+            this.params.page = Math.ceil(this.total / this.params.pagesize)
+            this.show = false
+            this.roleForm = {}
+            this.getRolesList()
+          } catch (error) {
+            console.log(error)
+          }
+        }
+      })
+    },
+    // 新增角色
+    handleAdd() {
+      this.show = true
+    },
     // 删除角色
     async handleRemove(id) {
       try {

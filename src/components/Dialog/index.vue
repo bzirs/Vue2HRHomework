@@ -5,20 +5,16 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
     :visible.sync="showDialog"
+    :before-close="handleClose"
+    width="30%"
   >
-    <el-form ref="roleForm" :model="roleForm" :rules="rules" label-width="100px">
-      <el-form-item label="角色名称" prop="name">
-        <el-input v-model="roleForm.name" />
-      </el-form-item>
-      <el-form-item label="角色描述">
-        <el-input v-model="roleForm.description" />
-      </el-form-item>
-    </el-form>
+
+    <slot name="form" />
     <!-- 底部 -->
-    <el-row slot="footer" type="flex" justify="center">
-      <el-col :span="6">
-        <el-button size="small">取消</el-button>
-        <el-button size="small" type="primary" @click="hSubmit">确定</el-button>
+    <el-row slot="footer" type="flex">
+      <el-col :span="24">
+        <el-button size="small" @click="handleCancel">取消</el-button>
+        <el-button size="small" type="primary" @click="$emit('handleSubmit')">确定</el-button>
       </el-col>
     </el-row>
   </el-dialog>
@@ -50,7 +46,16 @@ export default {
   mounted() {},
   activated() {},
   updated() {},
-  methods: {}
+  methods: {
+    // 关闭前回调
+    handleClose() {
+      this.$emit('update:showDialog', false)
+    },
+    // 取消
+    handleCancel() {
+      this.$emit('update:showDialog', false)
+    }
+  }
 }
 </script>
 
