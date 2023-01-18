@@ -82,6 +82,15 @@ export default {
         try {
           await removeRole(id)
           // this.$message.success('删除角色成功')
+          // 2. 如果当前表格中只有一条，删除之后自动请求上一页数据
+          if (this.rows.length === 1) {
+            this.params.page--
+            if (this.params.page <= 0) {
+              this.params.page = 1
+            }
+          }
+          // 重新请求
+          this.getRolesList()
         } catch (error) {
           console.log(error)
         }
