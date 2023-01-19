@@ -25,10 +25,10 @@
           <el-table-column label="部门" prop="departmentName" />
           <el-table-column label="入职时间" prop="timeOfEntry" />
           <el-table-column label="操作" width="280">
-            <template>
+            <template v-slot="{row:{id}}">
               <el-button type="text" size="small">查看</el-button>
               <el-button type="text" size="small">分配角色</el-button>
-              <el-button type="text" size="small">删除</el-button>
+              <el-button type="text" size="small" @click="handleRemove(id)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -38,7 +38,7 @@
           <el-pagination
             :current-page="params.page"
             :page-sizes="[2, 5, 10, 20]"
-            :page-size="params.pagesize"
+            :page-size="params.size"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
             @size-change="handleSizeChange"
@@ -53,7 +53,7 @@
 <script>
 
 import { hireTypeList } from '@/constant'
-import { getEmpList } from '@/api/employees'
+import { EmpDel, getEmpList } from '@/api/employees'
 export default {
   name: 'EmployeesPage',
   data() {
@@ -73,17 +73,47 @@ export default {
     this.loadEmpList()
   },
   methods: {
+    // 删除员工
+    async handleRemove(id) {
+      try {
+        await this.$confirm('此操作将永久删除该员工, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+
+        try {
+          await EmpDel(id)
+          // this.$message.success('删除角色成功')
+          // 2. 如果当前表格中只有一条，删除之后自动请求上一页数据
+          if (this.emps.length === 1) {
+            this.params.page--
+            if (this.params.page <= 0) {
+              this.params.page = 1
+            }
+          }
+          // 重新请求
+          this.loadEmpList()
+        } catch (error) {
+          console.log(error)
+        }
+      } catch (error) {
+        this.$message.info('取消操作')
+      }
+    },
     // 聘用形式
     hireType(t) {
       return hireTypeList[t] || '不知道'
     },
     // 分页页数改变
     handleCurrentChange(v) {
-      console.log(v)
+      this.params.page = v
+      this.loadEmpList()
     },
     // 分页长度改变
     handleSizeChange(v) {
-      console.log(v)
+      this.params.size = v
+      this.loadEmpList()
     },
     // 索引
     Index(index) {
@@ -91,6 +121,8 @@ export default {
     },
     // 获取员工列表
     async loadEmpList() {
+      this.emps = []
+
       const { data: { rows, total }} = await getEmpList(this.params)
 
       this.emps = rows
