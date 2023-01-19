@@ -6,6 +6,7 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/layout'
 import settings from './modules/settings'
+import employees from './modules/employees'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -61,7 +62,8 @@ export const constantRoutes = [
 ]
 
 export const asyncRoutes = [
-  settings
+  settings,
+  employees
 ]
 
 const createRouter = () => new Router({
