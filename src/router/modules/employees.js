@@ -2,11 +2,11 @@
 import Layout from '@/layout'
 
 const employees = {
-  path: '',
+  path: '/employees',
   component: Layout,
   children: [
     {
-      path: '/employees',
+      path: '',
       component: _ => import('@/views/employees'),
       name: 'employees',
       meta: { title: '员工管理', icon: 'employees' }

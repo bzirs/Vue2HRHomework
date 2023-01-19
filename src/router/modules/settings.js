@@ -2,11 +2,11 @@ import Layout from '@/layout'
 
 const settings = {
 
-  path: '',
+  path: '/settings',
   component: Layout,
   children: [
     {
-      path: '/settings',
+      path: '',
       component: _ => import('@/views/settings'),
       name: 'settings',
       meta: { title: '角色管理', icon: 'settings' }
