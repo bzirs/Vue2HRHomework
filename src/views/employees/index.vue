@@ -199,8 +199,9 @@ export default {
     },
     // 新增员工
     handleAdd() {
-      // this.formData = {}
+      this.formData = {}
       this.show = true
+      this.$refs.empForm.clearValidate()
     },
     // 删除员工
     async handleRemove(id) {
