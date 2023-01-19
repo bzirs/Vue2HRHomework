@@ -47,7 +47,7 @@
         </el-row>
 
         <!-- dialog -->
-        <dialog-component :show-dialog.sync="show">
+        <dialog-component :show-dialog.sync="show" @handleSubmit="handleSubmit">
           <template #form>
             <!-- 表单 -->
             <el-form ref="empForm" :model="formData" :rules="rules" label-width="120px">
@@ -87,10 +87,11 @@
 </template>
 
 <script>
-
+import { handleTreeArray } from '@/utils'
+import { getDepartmentsList } from '@/api/departments'
 import { hireTypeList } from '@/constant'
 import employees from '@/constant/employees'
-import { EmpDel, getEmpList } from '@/api/employees'
+import { addEmp, EmpDel, getEmpList } from '@/api/employees'
 export default {
   name: 'EmployeesPage',
   data() {
@@ -106,10 +107,10 @@ export default {
       show: false,
 
       formData: {
-        username: '', // 用户名
-        mobile: '', // 手机号
-        formOfEmployment: '', // 聘用形式
-        workNumber: '', // 工号
+        username: '小图', // 用户名
+        mobile: '13800000044', // 手机号
+        formOfEmployment: '1', // 聘用形式
+        workNumber: '1341', // 工号
         departmentName: '', // 部门
         timeOfEntry: '', // 入职时间
         correctionTime: '' // 转正时间
@@ -137,7 +138,9 @@ export default {
           { required: true, message: '请选择入职时间', trigger: 'blur' }
         ]
       },
-      treeShow: false
+
+      treeShow: false,
+      treeData: []
 
     }
   },
@@ -152,13 +155,51 @@ export default {
     this.loadEmpList()
   },
   methods: {
+    // 获取部门列表
+    async loadDepartments() {
+      const { data: { depts }} = await getDepartmentsList()
+      depts.shift() // 去掉第一个元素（公司名）
+      this.treeData = handleTreeArray(depts)
+    },
+    // 选择部门
+    hNodeClick(node) {
+      console.log(node)
+      if (!node.children.length) {
+        this.formData.departmentName = node.name
+      }
+    },
+    // 表单提交
+    handleSubmit() {
+      this.$refs.empForm.validate(async valid => {
+        if (valid) {
+          await this.addEmpInfo()
+
+          this.total++
+          this.params.page = Math.ceil(this.total / this.params.size)
+
+          this.loadEmpList()
+        }
+      })
+    },
+
+    // 新增员工
+    async addEmpInfo() {
+      try {
+        await addEmp(this.formData)
+        this.show = false
+      } catch (error) {
+        console.log(error)
+      }
+    },
 
     // 处理树状显示隐藏
-    handleTree() {
-
+    async handleTree() {
+      await this.loadDepartments()
+      this.treeShow = !this.treeShow
     },
     // 新增员工
     handleAdd() {
+      // this.formData = {}
       this.show = true
     },
     // 删除员工

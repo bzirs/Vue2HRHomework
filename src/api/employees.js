@@ -13,3 +13,10 @@ export const getEmpList = params => request.get('/sys/user', { params })
  * @returns
  */
 export const EmpDel = id => request.delete(`/sys/user/${id}`)
+
+/**
+ * @description 新增员工
+ * @param {*} obj
+ * @returns
+ */
+export const addEmp = obj => request.post('/sys/user', obj)
