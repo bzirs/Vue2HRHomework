@@ -22,9 +22,8 @@
               {{ hireType(formOfEmployment) }}
             </template>
           </el-table-column>
-          <el-table-column label="部门" />
-          <el-table-column label="入职时间" />
-          <el-table-column label="账户状态" />
+          <el-table-column label="部门" prop="departmentName" />
+          <el-table-column label="入职时间" prop="timeOfEntry" />
           <el-table-column label="操作" width="280">
             <template>
               <el-button type="text" size="small">查看</el-button>
