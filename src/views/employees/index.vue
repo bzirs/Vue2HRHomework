@@ -48,7 +48,7 @@
 
         <!-- dialog -->
         <dialog-component :show-dialog.sync="show" @handleSubmit="handleSubmit">
-          <template #form>
+          <template v-if="show" #form>
             <!-- 表单 -->
             <el-form ref="empForm" :model="formData" :rules="rules" label-width="120px">
               <el-form-item label="姓名" prop="username">
@@ -107,10 +107,10 @@ export default {
       show: false,
 
       formData: {
-        username: '小图', // 用户名
-        mobile: '13800000044', // 手机号
-        formOfEmployment: '1', // 聘用形式
-        workNumber: '1341', // 工号
+        username: '', // 用户名
+        mobile: '', // 手机号
+        formOfEmployment: '', // 聘用形式
+        workNumber: '', // 工号
         departmentName: '', // 部门
         timeOfEntry: '', // 入职时间
         correctionTime: '' // 转正时间
@@ -151,8 +151,9 @@ export default {
     }
   },
 
-  created() {
+  async created() {
     this.loadEmpList()
+    this.loadDepartments()
   },
   methods: {
     // 获取部门列表
@@ -194,14 +195,13 @@ export default {
 
     // 处理树状显示隐藏
     async handleTree() {
-      await this.loadDepartments()
       this.treeShow = !this.treeShow
     },
     // 新增员工
     handleAdd() {
-      this.formData = {}
+      // this.formData = {}
       this.show = true
-      this.$refs.empForm.clearValidate()
+      this.$refs.empForm?.clearValidate()
     },
     // 删除员工
     async handleRemove(id) {
