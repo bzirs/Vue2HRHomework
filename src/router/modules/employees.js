@@ -10,6 +10,12 @@ const employees = {
       component: _ => import('@/views/employees'),
       name: 'employees',
       meta: { title: '员工管理', icon: 'employees' }
+    },
+    {
+      path: 'detail',
+      component: () => import('@/views/employees/detail'),
+      name: 'employeesDetail',
+      hidden: true
     }
   ]
 }
