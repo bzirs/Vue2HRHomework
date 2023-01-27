@@ -20,3 +20,10 @@ export const EmpDel = id => request.delete(`/sys/user/${id}`)
  * @returns
  */
 export const addEmp = obj => request.post('/sys/user', obj)
+
+/**
+ * @description 批量导入员工
+ * @param {*} arr
+ * @returns
+ */
+export const batchAddEmps = arr => request.post('/sys/user/batch', arr)
