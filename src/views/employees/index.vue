@@ -7,7 +7,7 @@
         </template>
         <template #right>
           <el-button type="warning" size="small" @click="$router.push('/import')">excel导入</el-button>
-          <el-button type="danger" size="small">excel导出</el-button>
+          <el-button type="danger" size="small" @click="exportEmps">excel导出</el-button>
           <el-button type="primary" size="small" @click="handleAdd">新增员工</el-button>
         </template>
       </page-tools>
@@ -202,6 +202,55 @@ export default {
       // this.formData = {}
       this.show = true
       this.$refs.empForm?.clearValidate()
+    },
+    // 批量导出
+    formatData(list) {
+      // console.log(list, 777)
+      const map = {
+        id: '编号',
+        password: '密码',
+        mobile: '手机号',
+        username: '姓名',
+        timeOfEntry: '入职日期',
+        formOfEmployment: '聘用形式',
+        correctionTime: '转正日期',
+        workNumber: '工号',
+        departmentName: '部门',
+        staffPhoto: '头像地址'
+      }
+      var header = []
+      var data = []
+      header = Object.values(map) // [编号,密码]
+      const one = list[0]
+      if (!one) {
+        return { header, data }
+      }
+      data = list.map((obj) => {
+        return Object.keys(map).map((key) => {
+          return obj[key]
+        })
+      })
+      return { header, data }
+    },
+    exportEmps() {
+      import('@/vendor/Export2Excel').then(async excel => {
+        // 发ajax请求，获取数据
+        const res = await getEmpList(this.page, this.size)
+        const list = res.data.rows
+        console.log('从后端获取的数据', list)
+
+        const { header, data } = this.formatData(list)
+        // excel表示导入的模块对象
+        console.log(header, data)
+        excel.export_json_to_excel({
+          // header: ['姓名', '工资'], // 表头 必填
+          header: header, // 表头 必填
+          data,
+          filename: 'excel-list', // 文件名称
+          autoWidth: true, // 宽度是否自适应
+          bookType: 'xlsx' // 生成的文件类型
+        })
+      })
     },
     // 删除员工
     async handleRemove(id) {
